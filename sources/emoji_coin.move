@@ -6,6 +6,8 @@ module owner::emoji_coin {
 
     struct EmojiWithNameCoin {}
 
+    struct EmojiCoinWithInput {}
+
     public entry fun emoji_coin(caller: &signer) {
         // coin with emoji
         let (burn_cap, freeze_cap, mint_cap) = coin::initialize<EmojiCoin>(
@@ -46,5 +48,24 @@ module owner::emoji_coin {
         coin::destroy_freeze_cap<EmojiWithNameCoin>(freeze_cap);
         coin::destroy_mint_cap<EmojiWithNameCoin>(mint_cap);
         coin::destroy_burn_cap<EmojiWithNameCoin>(burn_cap);
+    }
+
+    public entry fun emoji_coin_with_input(caller: &signer, emoji: vector<u8>) {
+        // coin with emoji
+        let (burn_cap, freeze_cap, mint_cap) = coin::initialize<EmojiCoinWithInput>(
+            caller,
+            string::utf8(emoji),
+            string::utf8(emoji),
+            9,
+            false,
+        );  
+        
+        coin::register<EmojiCoinWithInput>(caller);
+        let coins = coin::mint<EmojiCoinWithInput>(1000000000000, &mint_cap);
+        coin::deposit<EmojiCoinWithInput>(@owner, coins);
+
+        coin::destroy_freeze_cap<EmojiCoinWithInput>(freeze_cap);
+        coin::destroy_mint_cap<EmojiCoinWithInput>(mint_cap);
+        coin::destroy_burn_cap<EmojiCoinWithInput>(burn_cap);
     }
 }
